@@ -59,8 +59,8 @@ class fjHWApp(scrapy.spiders.Spider):
                     t = result.group()
                     assem_t.append(t)
                 str_assem_t = ','.join(assem_t)
-                fst_finalmatch = re.split(u'\,+', str_assem_t)[0]
-                lst_finalmatch = re.split(u'\,+', str_assem_t)[-1]
+                fst_finalmatch = re.split(u'[\,-]+', str_assem_t)[0]
+                lst_finalmatch = re.split(u'[\,-]+', str_assem_t)[-1]
 
                 finalfst = fst_finalmatch.replace(u'K', u'').replace(u'+', u'.')
                 finallst = lst_finalmatch.replace(u'K', u'').replace(u'+', u'.')

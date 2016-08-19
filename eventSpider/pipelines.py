@@ -92,15 +92,20 @@ class CSVPipeline(object):
         self.exporter.start_exporting()
 
     def spider_closed(self, spider):
-        # for all spiders
         self.exporter.finish_exporting()
         file = self.files.pop(spider)
         file.close()
+        #
+        # TODO: define class and method to pre-process the exported csv;
+        print "Duplicates filtering and remove based on input history: \t" + file.name
+        print "\n\n=====================================================\n\n"
+        from eventSpider.pandas_parc import AdvancedParser
+        a_parser=  AdvancedParser()
+        a_parser.setParser(spider)
 
     def process_item(self, item, spider):
 
-        from optionclass import DataParser
-        from optionclass import ExportOptions
+        from ParserOptions import DataParser
 
         parser = DataParser()
         parser.setRules(spider)
