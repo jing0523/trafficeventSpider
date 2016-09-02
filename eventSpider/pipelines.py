@@ -8,9 +8,6 @@ import datetime, time
 from scrapy import signals
 from scrapy.exporters import CsvItemExporter
 
-class JSONPipeline(object):
-    pass
-
 
 class CSVPipeline(object):
     def __init__(self):
@@ -97,22 +94,19 @@ class CSVPipeline(object):
         file.close()
         #
         # TODO: define class and method to pre-process the exported csv;
+
+
         print "Duplicates filtering and remove based on input history: \t" + file.name
         print "\n\n=====================================================\n\n"
-        from eventSpider.pandas_parc import AdvancedParser
-        a_parser=  AdvancedParser()
-        a_parser.setParser(spider)
+        # from eventSpider.pandas_parc import AdvancedParser
+        # a_parser=  AdvancedParser()
+        # a_parser.setParser(spider)
 
     def process_item(self, item, spider):
 
-        from ParserOptions import DataParser
-
-        parser = DataParser()
-        parser.setRules(spider)
-
         item['ref_point'] = u"-1,-1" if item['ref_point'].upper().find(u'NULL') > -1 else item['ref_point']
-        item['start_time'] = self.convert_timestamp(item['start_time']) if item['START_TIME'] else None
-        item['end_time'] = self.convert_timestamp(item['end_time']) if item['END_TIME'] else u'0'
+        # item['start_time'] = self.convert_timestamp(item['start_time']) if item['START_TIME'] else None
+        # item['end_time'] = self.convert_timestamp(item['end_time']) if item['END_TIME'] else u'0'
 
         item['is_sure'] = u'0' if not item['END_TIME'] else u'1'
         self.exporter.export_item(item)

@@ -70,24 +70,20 @@ class fjHWApp(scrapy.spiders.Spider):
                 item['spider_fststake'] = fst_finalmatch
                 item['spider_lststake'] = lst_finalmatch
 
-                return (max(finalfst, finallst) - min(finalfst, finallst)) * 1000
-            else:
-                for result in p.finditer(utest):
-                    t = result.group()
-                    if not t:
-                        return -1
-                    fst_finalmatch = re.split(u'[-~至－]+', t)[0]
-                    lst_finalmatch = re.split(u'[-~至－]+', t)[-1]
-                    finalfst = fst_finalmatch.replace(u'K', u'').replace(u'+', u'.')
-                    finallst = lst_finalmatch.replace(u'K', u'').replace(u'+', u'.')
-
-                    finalfst = float(str(finalfst))
-                    finallst = float(str(finallst))
-                    item['spider_fststake'] = fst_finalmatch
-                    item['spider_lststake'] = lst_finalmatch
-
-                return (max(finalfst, finallst) - min(finalfst, finallst)) * 1000
-
+                return (max(finalfst, finallst) - min(finalfst, finallst)) * 100
+            for result in p.finditer(utest):
+                t = result.group()
+                if not t:
+                    return -1
+                fst_finalmatch = re.split(u'[-~至－]+', t)[0]
+                lst_finalmatch = re.split(u'[-~至－]+', t)[-1]
+                finalfst = fst_finalmatch.replace(u'K', u'').replace(u'+', u'.')
+                finallst = lst_finalmatch.replace(u'K', u'').replace(u'+', u'.')
+                finalfst = float(str(finalfst))
+                finallst = float(str(finallst))
+                item['spider_fststake'] = fst_finalmatch
+                item['spider_lststake'] = lst_finalmatch
+            return (max(finalfst, finallst) - min(finalfst, finallst)) * 1000
 
 
     def parse(self, response):

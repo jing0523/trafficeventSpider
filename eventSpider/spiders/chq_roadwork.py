@@ -3,17 +3,20 @@ import scrapy, os
 import urllib2, urllib
 from eventSpider.items import EventspiderItem
 from scrapy.selector import HtmlXPathSelector
-from scrapy.http import Request
+from scrapy.http import FormRequest
 import time, datetime, time
+from bs4 import BeautifulSoup as BS
+import re
 
 class ChqRoadworkSpider(scrapy.Spider):
     name = "chq_roadwork"
     allowed_domains = ['183.64.107.220:9037',
               # map
               ]
-    start_urls = (
-        'http://183.64.107.220:9037/Traffic/List'
-    )
+    start_urls = [
+        # 'http://183.64.107.220:9037/Traffic/List'
+        "http://183.64.107.220:9037/Traffic/AllMap?selectedGov=&selectedRoad="
+    ]
 
     def event_type_switcher(self, eventTypeID):
         if type(eventTypeID) is unicode:
@@ -31,8 +34,36 @@ class ChqRoadworkSpider(scrapy.Spider):
             return switcher.get(_event_type_id, 'NONE')
 
         return 'NONE'
+    def parse_dot_onmap(self,response):
+
+        content = response.body_as_unicode()
+        soup = BS(content,'html.parser')
+        script = soup.find("script")
+        text = soup.get_text()
+        #todo:  functionalize
+        lines = [line.strip() for line in text.splitlines()]
+        for i in range(1,):
+            xy_tg_line = [l for l in lines if l.find("var point"+str(i+1) + " = ") > -1]
+            opts_tg_line = [l for l in lines if l.find("var opts" + str(i + 1) + " = ") > -1]
+            infowin_tg_line = [l for l in lines if l.find("var infoWindow" + str(i + 1) + " = ") > -1]
+            xy_tg_line = ''.join(xy_tg_line)
+            re_pattern_xy  = u'(?:\d*\.)+\d+'
+            if re.search(re_pattern_xy,xy_tg_line):
+                p = re.compile(re_pattern_xy)
+                tempx = [result.group() for result in  p.finditer(xy_tg_line)][0]
+                tempy = [result.group() for result in  p.finditer(xy_tg_line)][1]
+                xy = "{0},{1}".format(tempx,tempy)
+            else:
+                xy = "-1,-1"
 
     def parse(self, response):
+
+        yield FormRequest(
+            url = "http://183.64.107.220:9037/Traffic/AllMap?selectedGov=&selectedRoad=",
+            method="GET",
+            dont_filter=True,
+            callback=self.parse_dot_onmap
+        )
         selector = HtmlXPathSelector(response)
         sels = selector.select('//div[@class="ui-wrap path"]/ul/li')
 

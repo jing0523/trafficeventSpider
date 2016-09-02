@@ -148,8 +148,7 @@ class jsHWApp(scrapy.spiders.Spider):
                 item['event_source'] = u'江苏省交通运输厅'
 
                 item['reason'] = self.event_type_switcher(case[u'SHIJLX'])
-                item['weather'] = u'-1' if int(str(item['reason'])) > 0 else u'待定'
-
+                item['weather'] = u'-1'
                 item['start_time'] = time.strptime(case[u'SHIFSJ'], '%Y-%m-%d %H:%M:%S')
                 item['end_time'] =   time.strptime(case[u'YUJHFSJ'], '%Y-%m-%d %H:%M:%S')
 
