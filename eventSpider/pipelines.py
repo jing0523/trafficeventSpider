@@ -49,7 +49,9 @@ class CSVPipeline(object):
             'chqevent1':public_fields,
             'lnHWlz':public_fields,
             'chq_roadwork':public_fields,
-            'shdHWApp':public_fields
+            'shdHWApp':public_fields,
+            'shHWApp':public_fields
+
         }
 
         return switcher.get(spider.name, 'NONE')

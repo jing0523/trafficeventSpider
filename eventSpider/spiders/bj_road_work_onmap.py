@@ -76,12 +76,12 @@ class bjRoadWorkOnMap(scrapy.spiders.Spider):
             raw_type = self.eventtype_switcher(row[u'dealCase'])
             item['event_type'] = str(raw_type).encode('utf-8') if type(raw_type) is int else -99
             # need to parse to unix regex
-            item['start_time'] = time.strptime(row[u'occurTime'], '%Y-%m-%d')
+            item['start_time'] = datetime.datetimestrptime(row[u'occurTime'], '%Y-%m-%d')
             item['START_TIME'] = row[u'occurTime']
             endtime = row[u'endTime']
             if endtime:
                 item['is_sure']  = 1
-                item['end_time'] = time.strptime(row[u'endTime'], '%Y-%m-%d %H:%M')
+                item['end_time'] = datetime.datetime.strptime(row[u'endTime'], '%Y-%m-%d %H:%M')
                 item['END_TIME'] = row[u'endTime']
             else:
                 item['is_sure'] = 0
