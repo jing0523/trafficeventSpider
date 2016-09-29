@@ -1,27 +1,35 @@
 # -*- coding: utf-8 -*-
 from pandas import *
 import numpy as num
-# TODO: joinresult 制备工具需要的列：id	名称编号用|分隔	坐标x	坐标y	坐标类型 长度-米	方向
-#C:\Users\lijing211574\PycharmProjects\eventSpider\eventSpider\input_join\join_fake.csv
-#C:\Users\lijing211574\PycharmProjects\eventSpider\eventSpider\output\fjHWApp_2016-08-19_11-20.csv
-df0 = read_csv("input_join/fake.csv") # output joinresult
-df1= read_csv("input_join/fujian-final-fake.csv")
+import numpy
+
+"""
++++++++++++++++++++++++++++++++++++++++用于拼接link匹配结果和其他字段的脚本++++++++++++++++++++++++++++++++++++++++++++++++
+"""
+# C:\Users\lijing211574\PycharmProjects\eventSpider\eventSpider\zjHWApp_2016-09-26_13-24.csv
+# C:\Users\lijing211574\PycharmProjects\eventSpider\eventSpider/output/shdHWApp_2016-09-27_13-54.csv
+df1 = read_csv("input_join/shdHWApp_2016-09-29_14-46_linkcalc.csv") # output joinresult
+# df0 = read_csv("input_join/zjHWApp_2016-09-26_13-24.csv") # output joinresult
+df0= read_csv("output/shdHWApp_2016-09-29_14-46.csv")
 df1_a = df1.copy()
 
-#福建版本
-def formatchanger(x):
-    if type(x) is str:
-        if x.startswith("1"): #use regex to exchange
-            return long(float(x))
-        return -1
-    return x
+
+temp = pandas.merge(left=df0,right=df1_a,left_on=['spider_oid'],right_on=['id'],suffixes=['_L','_R'])
+temp.to_csv("input_join/shdHWApp_2016-09-29_14-46_merge.csv")
+export_result = temp.copy()
+# export_result = df0.copy()
+export_result = export_result.drop(export_result.columns[[0,1,2,3,4,5,6,7,8,9,
+                                                          10,11,29,
+                                                          30,
+                                                          32
+                                                          ]],axis=1)
+# export_result["link_info"] = export_result.iloc[:33].map(lambda x: x.replace(';',","))
 
 
-df0["_id"] = df0["spider_oid"].astype(int)
-df1_a["_id"] = df1_a["id"].apply(formatchanger)
-df1_a["_id"] = df1_a["_id"].astype(int)
-print df1_a["_id"].head(5)
-print df0["_id"].head(5)
+export_result.to_csv("input_join/shdHWApp_2016-09-29_14-46drop.csv") #15 rows 1 file to export
 
-temp = df0.merge(df1_a)
-temp.to_csv("input_join/temp.csv")
+rows_cnt = len(export_result.index)
+for i in range(0,rows_cnt +1,15):
+    blockrows =  export_result.iloc[i:i+15, ]
+    blockrows.to_csv("input_join/shdHWApp_2016-09-29_14-46_p" + str(i/15) +".csv")
+ #make selection using iloc [axis=0,axis=1]

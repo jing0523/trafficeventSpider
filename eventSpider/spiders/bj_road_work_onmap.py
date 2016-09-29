@@ -5,6 +5,7 @@ import scrapy
 import json, codecs, os, sys
 import datetime, time
 import re
+import random
 
 
 class bjRoadWorkOnMap(scrapy.spiders.Spider):
@@ -14,6 +15,8 @@ class bjRoadWorkOnMap(scrapy.spiders.Spider):
         'http://glcx.bjlzj.gov.cn/bjglwww/index.shtml'
     ]
 
+    def regen_randomoid(self,length):
+        return ''.join(str(random.choice(range(0,9))) for i in range(0,length))
     def calculate_dist(self, item):
         description = item['description']
         regex_stake = u'(K\d+(\+\d+)*[~](K)*\d+(\+\d+)*)|(K\d+(\+\d+)*)'
@@ -76,12 +79,12 @@ class bjRoadWorkOnMap(scrapy.spiders.Spider):
             raw_type = self.eventtype_switcher(row[u'dealCase'])
             item['event_type'] = str(raw_type).encode('utf-8') if type(raw_type) is int else -99
             # need to parse to unix regex
-            item['start_time'] = datetime.datetimestrptime(row[u'occurTime'], '%Y-%m-%d')
+            item['start_time'] = time.strptime(row[u'occurTime'], '%Y-%m-%d')
             item['START_TIME'] = row[u'occurTime']
             endtime = row[u'endTime']
             if endtime:
                 item['is_sure']  = 1
-                item['end_time'] = datetime.datetime.strptime(row[u'endTime'], '%Y-%m-%d %H:%M')
+                item['end_time'] = time.strptime(row[u'endTime'], '%Y-%m-%d %H:%M')
                 item['END_TIME'] = row[u'endTime']
             else:
                 item['is_sure'] = 0
@@ -101,11 +104,12 @@ class bjRoadWorkOnMap(scrapy.spiders.Spider):
             item['ref_point'] =u'-1,-1' if raw_coords.find("0.0,0.0") > -1 else raw_coords
             item['ref_point'] = item['ref_point'].replace('y:','')
 
-            item['event_source'] = u'北京市路政局公路出行信息服务站'
+            item['event_source'] = u'1：北京市路政局公路出行信息服务站'
             item['city'] = u'北京'
 
             item['spider_oid'] = row[u'eventId']
             item['spider_ref'] = self.start_urls[0]
             item['spider_dist'] = self.calculate_dist(item)
+            item['spider_direction'] = u'默认双向'
 
             yield item

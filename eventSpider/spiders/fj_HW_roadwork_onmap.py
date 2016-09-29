@@ -28,6 +28,7 @@ class fjHWApp(scrapy.spiders.Spider):
         t_cons = t0 + u'|' + t1_1 + u'高速' if ustring.find(u'\u590d\u7ebf') < 0 else t0 + u'|' + t1_1 + u'复线'
 
         t_cons = t_cons if len(t_cons) < 20 else t0 + u'|'
+        t_cons = t_cons.replace(u"|",u"") if len(t_cons) == t_cons.find(u'|') else t_cons
 
         return t_cons
 
@@ -111,7 +112,7 @@ class fjHWApp(scrapy.spiders.Spider):
             for event in events:
                 item = EventspiderItem()
 
-                item['event_source'] = u'福建高速公路'
+                item['event_source'] = u'1：福建高速公路'
                 item['reason'] = 1
 
                 item['START_TIME'] = event[u'occtime']
@@ -149,7 +150,7 @@ class fjHWApp(scrapy.spiders.Spider):
                 item = EventspiderItem()
 
 
-                item['event_source'] = u'福建高速公路'
+                item['event_source'] = u'1:福建高速公路' #1:表示官方 0 表示用户
                 item['reason'] = 2
 
                 item['START_TIME'] = event[u'occtime']

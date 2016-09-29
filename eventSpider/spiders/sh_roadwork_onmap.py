@@ -137,14 +137,14 @@ class shHWApp(scrapy.spiders.Spider):
             item["START_TIME"] =  dl[u'detectionTimeDis']
             item["END_TIME"] =  dl[u'planTimeDis']
 
-            item['start_time'] = datetime.datetime.strptime(dl[u'detectionTimeDis'], '%Y-%m-%d %H:%M')
-            item['end_time'] = datetime.datetime.strptime( dl[u'planTimeDis'], '%Y-%m-%d %H:%M') if dl[u'planTimeDis'] else None
+            item['start_time'] =time.strptime(dl[u'detectionTimeDis'], '%Y-%m-%d %H:%M')
+            item['end_time'] = time.strptime( dl[u'planTimeDis'], '%Y-%m-%d %H:%M') if dl[u'planTimeDis'] else None
             item['spider_status'] = self.check_status(postdate = item["START_TIME"],
                                                       plandate =item["END_TIME"] )
 
             item["event_type"] = 0
             item["reason"] = 2
-            item["event_source"] = u"上海市路政局"
+            item["event_source"] = u"1：上海市路政局"
             item["loc_name"] = dl[u'roadName']
 
             coord_array = dl[u'markingNumber']
@@ -159,4 +159,10 @@ class shHWApp(scrapy.spiders.Spider):
                 item["available"] = occupies['available']
             item["city"] = u"上海"
 
+            """
+            +++++++++++++++++++++++DropItem cannot apply to all spider, drop item here ++++++++++++++++++++++++++++++
+
+            """
+            if item['spider_status'] == "overdue":
+                continue
             yield item

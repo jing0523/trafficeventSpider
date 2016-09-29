@@ -144,8 +144,8 @@ class jsHWApp(scrapy.spiders.Spider):
                 item = EventspiderItem()
 
                 add_text = case[u'LUXBSM'] if case[u'LUXBSM'].find(u'LX') < 0 else u""
-                item['loc_name'] = case[u'LUDMC'] + u'|' + add_text
-                item['event_source'] = u'江苏省交通运输厅'
+                item['loc_name'] = add_text + u'|' + case[u'LUDMC']
+                item['event_source'] = u'1：江苏省交通运输厅'
 
                 item['reason'] = self.event_type_switcher(case[u'SHIJLX'])
                 item['weather'] = u'-1'

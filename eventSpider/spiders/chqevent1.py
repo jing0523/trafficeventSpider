@@ -80,7 +80,7 @@ class Chqevent1Spider(scrapy.spiders.Spider):
             item['spider_status'] = u'ACTIVE'
             item['event_type'] = 0
             item['reason'] = 2
-            item['event_source'] = u'重庆交通出行网'
+            item['event_source'] = u'1：重庆交通出行网'
             item['loc_name'] = rdname
             item['ref_point'] = xy
             item['ref_point_type'] = 2 #google 偏转经纬度

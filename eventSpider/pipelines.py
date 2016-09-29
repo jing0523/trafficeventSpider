@@ -94,21 +94,27 @@ class CSVPipeline(object):
         self.exporter.finish_exporting()
         file = self.files.pop(spider)
         file.close()
-        #
-        # TODO: define class and method to pre-process the exported csv;
+        #attension{ working directory - output
+        import ExportOptions as eo
 
+        _next = raw_input("Delta input ? Y/N")
+        _purgefile = eo.delta_input(file.name, _next, _spider = spider.name)
+        _filename = _purgefile.name if _purgefile else file.name
 
-        print "Duplicates filtering and remove based on input history: \t" + file.name
-        print "\n\n=====================================================\n\n"
-        # from eventSpider.pandas_parc import AdvancedParser
-        # a_parser=  AdvancedParser()
-        # a_parser.setParser(spider)
+        from scrapy import log
+        log.logger.info("Processing: Remove fields for link info calculating")
+        eo.export_linkinfo_in_file(_filename)
+        _next = raw_input("Next: exporting manual input rcrds? Y/N")
+        eo.export_manualinput_rows(file.name,_next)
+
 
     def process_item(self, item, spider):
 
         item['ref_point'] = u"-1,-1" if item['ref_point'].upper().find(u'NULL') > -1 else item['ref_point']
-        # item['start_time'] = self.convert_timestamp(item['start_time']) if item['START_TIME'] else None
-        # item['end_time'] = self.convert_timestamp(item['end_time']) if item['END_TIME'] else u'0'
+        if spider.name in [ 'bjevent','fjHWApp','lnHWlz','jsHWApp','shHWApp','zjHWApp',
+                        'shdHWApp']:
+            item['start_time'] = self.convert_timestamp(item['start_time']) if item['START_TIME'] else None
+            item['end_time'] = self.convert_timestamp(item['end_time']) if item['END_TIME'] else u'0'
 
         item['is_sure'] = u'0' if not item['END_TIME'] else u'1'
         self.exporter.export_item(item)

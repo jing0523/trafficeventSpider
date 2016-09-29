@@ -46,7 +46,7 @@ class shdHWApp(scrapy.spiders.Spider):
 
             for eventtag in soup.eventlist.contents:
                 item = EventspiderItem()
-                item['event_source'] = u'山东交通出行网'
+                item['event_source'] = u'1：山东交通出行网'
                 item['reason'] = 1
 
                 item['START_TIME'] = eventtag.starttime.text if eventtag.starttime else None
