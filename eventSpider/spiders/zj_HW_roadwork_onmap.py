@@ -97,7 +97,9 @@ class zjHWApp(scrapy.spiders.Spider):
             # return
         else:
             for e in events:
-                item['spider_oid'] = int_realRoadID
+                # item['spider_oid'] = int_realRo        adID
+                import random
+                item['spider_oid'] =  ''.join(str(random.choice(range(0,9))) for i in range(0,8)) # 8 digit random number
                 item['loc_name'] = realRoadName
 
                 str_passby_stations = e[u'startnodename'] + ' - ' + e[u'endnodename']

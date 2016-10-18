@@ -48,6 +48,7 @@ class shdHWApp(scrapy.spiders.Spider):
                 item = EventspiderItem()
                 item['event_source'] = u'1：山东交通出行网'
                 item['reason'] = 1
+                item['event_type'] = 1
 
                 item['START_TIME'] = eventtag.starttime.text if eventtag.starttime else None
                 item['END_TIME'] = eventtag.endtime.text if eventtag.endtime else None
@@ -90,7 +91,7 @@ class shdHWApp(scrapy.spiders.Spider):
                 item = EventspiderItem()
                 item['event_source'] = u'山东交通出行网'
                 item['reason'] = 2
-
+                item['event_type'] = 1
                 item['START_TIME'] = eventtag.starttime.text if eventtag.starttime else None
                 item['END_TIME'] = eventtag.endtime.text  if eventtag.endtime else None
                 X = eventtag.x.text

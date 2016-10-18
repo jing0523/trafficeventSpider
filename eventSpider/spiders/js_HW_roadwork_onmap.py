@@ -72,8 +72,8 @@ class jsHWApp(scrapy.spiders.Spider):
             switcher = {
                 151: u'2',#u'养护施工'
                 115: u'4',#u'通告',
-                131: u'天气受阻-雨',#u'0',
-                134: u'天气受阻-雾',#u'0'
+                131: u'0-0',#u'0',
+                134: u'0-4',#u'0'
                 121: u'1',#u'交通事故',
                 173: u'1',#u'紧急事故',
                 144: u'2',#u'断路',
@@ -133,9 +133,9 @@ class jsHWApp(scrapy.spiders.Spider):
                     item['spider_fststake'] = fst_finalmatch
                     item['spider_lststake'] = lst_finalmatch
 
-                    return max(finalfst, finallst)- min(finalfst, finallst)
+                    return (max(finalfst, finallst)- min(finalfst, finallst))*1000
         else:
-            return max(fst_stakenum,lst_stakenum) - min(fst_stakenum,lst_stakenum)
+            return (max(fst_stakenum,lst_stakenum) - min(fst_stakenum,lst_stakenum))*1000
 
     def parse(self, response):
         data = json.loads(response.body.decode('gb18030').encode('utf8'))

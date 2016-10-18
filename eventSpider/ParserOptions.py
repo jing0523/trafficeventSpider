@@ -29,11 +29,11 @@ class DataParser(object):
     def __init__(self):
         self.parser_rules = []
 
-    def setRules(self, spider):
-        self.name = spider.name
-        if not spider.name:
+    def setRules(self, _spidername): #input -> spider_name
+        self.name = _spidername
+        if not _spidername:
             return None
-        if spider.name in ['bj1', 'sz1', 'nj1', 'cd1', 'sichuan1', 'wh1']:  # 目前支持通告分析
+        if _spidername in ['bj1', 'sz1', 'nj1', 'cd1', 'sichuan1', 'wh1']:  # 目前支持通告分析
             self.parser_rules = [
                 DateParserRule(pattern=u'决定自[0-9]{4}年([0-9]{1,2}月)?([0-9]{1,2}日)?起，',
                                start_pos=3, end_pos=-2, target='start'),
@@ -43,12 +43,12 @@ class DataParser(object):
                                start_pos=10, end_pos=-1, target='end'),
 
             ]
-        elif spider.name == 'zjHWApp':
+        elif _spidername == 'zjHWApp':
             self.parser_rules = [
                 DateParserRule(pattern=u'预计在[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s[0-9]{2}\:[0-9]{2}(\:[0-9]{2})?',
                                start_pos=3, end_pos=-2, target='end'),
             ]
-        elif spider.name == 'bjevent2':
+        elif _spidername == 'bjevent2':
             self.parser_rules = [
                 DateParserRule(pattern=u'预计恢复时间[0-9]{4}年[0-9]{1,2}月[0-9]{1,2}日',
                                start_pos=6, end_pos=-2, target='end'),
@@ -56,13 +56,13 @@ class DataParser(object):
 
         return self.parser_rules
 
-    def check_fill_st(self, test):
+    def check_fill_st(self, item_desc):
         import re
 
-        if (type(test) is str):
-            utest = unicode(test, 'utf8')
+        if (type(item_desc) is str):
+            utest = unicode(item_desc, 'utf8')
         else:
-            utest = test
+            utest = item_desc
         start_datetime = ''
         lst_datetime = []
         for rule in [r for r in self.parser_rules if r.target == 'start']:
@@ -76,13 +76,13 @@ class DataParser(object):
         start_datetime = ';'.join(lst_datetime)
         return start_datetime.encode('utf-8')
 
-    def check_fill_ed(self, test):
+    def check_fill_ed(self, item_desc):
         import re
         end_datetime = ''
-        if (type(test) is str):
-            utest = unicode(test, 'utf8')
+        if (type(item_desc) is str):
+            utest = unicode(item_desc, 'utf8')
         else:
-            utest = test
+            utest = item_desc
         lst_datetime = []
         for rule in [r for r in self.parser_rules if r.target == 'end']:
             p = re.compile(rule.pattern)

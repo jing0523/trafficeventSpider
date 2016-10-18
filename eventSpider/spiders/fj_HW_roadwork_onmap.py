@@ -17,6 +17,24 @@ class fjHWApp(scrapy.spiders.Spider):
 
     response_id_map = {}
     page = -1
+
+    def check_status(self, **kwargs):
+        from datetime import datetime
+        td = datetime.today()
+        postdate = kwargs.items()[0][1]
+        plandate = kwargs.items()[-1][1]
+
+        postdate = str(postdate) if type(postdate) is unicode else None
+        plandate = str(plandate) if type(plandate) is unicode else None
+
+        dt2 = datetime.strptime(postdate, '%Y-%m-%d %H:%M:%S')
+        dt3 = datetime.strptime(plandate, '%Y-%m-%d %H:%M:%S')
+
+        if (dt2 < td and dt3 > td):
+            return 'active'
+        return 'overdue'
+
+
     def extract_loc(self,ustring):
 
         if len(ustring) < 1:
@@ -116,7 +134,10 @@ class fjHWApp(scrapy.spiders.Spider):
                 item['reason'] = 1
 
                 item['START_TIME'] = event[u'occtime']
-                item['END_TIME'] = event[u'planovertime']
+                item['END_TIME'] = event[u'planovertime'] if event[u'planovertime'] else u"2019-01-01 00:00:00"
+                item['spider_status'] = self.check_status(postdate=item["START_TIME"],
+                                                          plandate=item["END_TIME"])
+
                 X = event[u'coor_x']
                 Y = event[u'coor_y']
 
@@ -154,7 +175,11 @@ class fjHWApp(scrapy.spiders.Spider):
                 item['reason'] = 2
 
                 item['START_TIME'] = event[u'occtime']
-                item['END_TIME'] = event[u'planovertime']
+                item['END_TIME'] = event[u'planovertime'] if event[u'planovertime'] else u"2019-01-01 00:00:00"
+                item['spider_status'] = self.check_status(postdate=item["START_TIME"],
+                                                          plandate=item["END_TIME"])
+
+
                 enc_event_text = event[u'remark'].strip().replace('\n', ' ').replace('\r', '')
                 item['description'] = enc_event_text
                 item['loc_name'] = self.extract_loc(enc_event_text)
@@ -175,4 +200,10 @@ class fjHWApp(scrapy.spiders.Spider):
                 item['start_time'] = time.strptime(event[u'occtime'], '%Y-%m-%d %H:%M:%S')
                 item['end_time'] = time.strptime(event[u'planovertime'], '%Y-%m-%d %H:%M:%S') if event[u'planovertime'] else None
 
+                """
+                    +++++++++++++++++++++++DropItem cannot apply to all spider, drop item here ++++++++++++++++++++++++++++++
+
+                    """
+                if item['spider_status'] == "overdue":
+                    continue
                 yield item

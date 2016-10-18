@@ -91,7 +91,7 @@ class shHWApp(scrapy.spiders.Spider):
                 assem_t.append(t)
             snd_match = REGEX.split(u'\u53ef\u7528\u8f66\u9053\u6570\uff1a',  ','.join(assem_t))[-1]
 
-        result_dict = {"occupy": fst_match, "available": snd_match}
+        result_dict = {"occupy": int(fst_match), "available": int(snd_match)}
         return result_dict
 
     def road_work_data_parse(self,response):

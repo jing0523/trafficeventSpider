@@ -96,22 +96,27 @@ class CSVPipeline(object):
         file.close()
         #attension{ working directory - output
         import ExportOptions as eo
-
-        _next = raw_input("Delta input ? Y/N")
-        _purgefile = eo.delta_input(file.name, _next, _spider = spider.name)
-        _filename = _purgefile.name if _purgefile else file.name
+        _purgefile = eo.delta_input(file.name,
+                                    command= raw_input("Delta input ? Y/N")
+                                    , _spider = spider.name)
+        _filename = _purgefile if _purgefile else file.name
 
         from scrapy import log
         log.logger.info("Processing: Remove fields for link info calculating")
-        eo.export_linkinfo_in_file(_filename)
-        _next = raw_input("Next: exporting manual input rcrds? Y/N")
-        eo.export_manualinput_rows(file.name,_next)
+        eo.export_linkinfo_in_file(_filename,_spider = spider.name)
+
+        log.logger.info("Processing:Merge link info and other fields")
+        eo.combine_linkinfo(_filename
+                            ,commmand=raw_input("Merge linkinfo into spider outcome? Y/N")
+                            ,_spider = spider.name)
+        # _next = raw_input("Next: exporting manual input rcrds? Y/N")
+        # eo.export_manualinput_rows(file.name,_next)
 
 
     def process_item(self, item, spider):
 
         item['ref_point'] = u"-1,-1" if item['ref_point'].upper().find(u'NULL') > -1 else item['ref_point']
-        if spider.name in [ 'bjevent','fjHWApp','lnHWlz','jsHWApp','shHWApp','zjHWApp',
+        if spider.name in [ 'bjevent', 'bjevent2','fjHWApp','lnHWlz','jsHWApp','shHWApp','zjHWApp',
                         'shdHWApp']:
             item['start_time'] = self.convert_timestamp(item['start_time']) if item['START_TIME'] else None
             item['end_time'] = self.convert_timestamp(item['end_time']) if item['END_TIME'] else u'0'

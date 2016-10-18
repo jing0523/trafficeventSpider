@@ -19,6 +19,11 @@ class ChqRoadworkSpider(scrapy.Spider):
     ]
 
     def event_type_switcher(self, eventTypeID):
+        """
+        rewrite fields
+        :param eventTypeID:
+        :return:
+        """
         if type(eventTypeID) is unicode:
             _event_type_id = int(eventTypeID)
             switcher = {
@@ -80,14 +85,36 @@ class ChqRoadworkSpider(scrapy.Spider):
             url = 'http://' + self.allowed_domains[0] + _url
             road_alias = _title.split('-')[0] #todo: set request on road alias
             item = EventspiderItem()
+            """
+
+             'spider_oid', 'spider_fststake', 'spider_lststake','spider_direction', 'spider_dist',
+            'spider_postdate', 'spider_ref','START_TIME', 'END_TIME','spider_status','fake_dist','fake_direction',
+            'event_type','reason'
+            ,'event_source'
+            ,'start_time'
+            ,'end_time'
+            , 'loc_name'
+            , 'cycle'
+            , 'begin_end'
+            , 'ref_point'
+            , 'ref_point_type'
+            ,'description'
+            , 'is_sure'
+            ,'speed'
+            ,'available'
+            ,'occupy'
+            ,'weather'
+            ,'city',
+            'link_info'
+
+            """
 
 
-
-            item['event_source'] = u'重庆公路网'
+            item['event_source'] = u'1：重庆公路网'
             item['event_type'] = self.event_type_switcher(_type.strip())
-            item['CONTENT'] = _content.strip().replace('\n', ' ').replace('\r', '').encode('utf-8')
+            item['description'] = _content.strip().replace('\n', ' ').replace('\r', '').encode('utf-8')
 
-            item['REF'] = url
+            item['spider_ref'] = url
             _content = urllib2.urlopen(url)
             import BeautifulSoup
             _ctnt = _content.read()
@@ -100,7 +127,9 @@ class ChqRoadworkSpider(scrapy.Spider):
                 timelist.append(t)
             item['START_TIME'] = timelist[1][5:]
             item['END_TIME'] = timelist[2][5:]
-            item['COLLECTDATE'] = datetime.datetime.today().strftime('%Y-%m-%d')
+            item['start_time'] = timelist[2][5:]
+            item['END_TIME'] = timelist[2][5:]
+            item['spider_postdate'] = datetime.datetime.today().strftime('%Y-%m-%d')
             _attachedtxt = ''.join([l.getText() for l in rp.findAll('label')])
 
             item['TITLE'] = (_title + _attachedtxt).strip().replace('\n', ' ').replace('\r', '').encode('utf-8')
@@ -114,7 +143,6 @@ class ChqRoadworkSpider(scrapy.Spider):
                     img_opener = urllib.URLopener()
                     import random
                     r = ''.join(str(random.random()).split('.'))
-
                     imgname = _title + r + img_url[-4:]
                     img_opener.retrieve(url=img_url,
                                         filename=itemdir + '\\' + imgname)
